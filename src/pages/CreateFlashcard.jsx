@@ -1,5 +1,5 @@
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
-import { MdUploadFile, MdDeleteOutline, MdAdd } from "react-icons/md";
+import { MdUploadFile, MdAdd } from "react-icons/md";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
@@ -7,6 +7,7 @@ import { addFlashcard } from "../redux/flashcardSlice";
 import { filetoDataURL } from "../utils/localStorage";
 import Loading from "../components/Loading";
 import TermInput from "../components/TermInput";
+import * as Yup from "yup";
 
 const CreateFlashcard = () => {
   const [groupImagePreview, setGroupImagePreview] = useState(null);
@@ -16,6 +17,30 @@ const CreateFlashcard = () => {
   const groupFilePicker = useRef(null);
 
   const dispatch = useDispatch();
+
+  const validationSchema = Yup.object({
+    groupname: Yup.string()
+      .min(3, "Group Name must be atleast 3 characters")
+      .required("Group name is required"),
+
+    groupdescription: Yup.string()
+      .min(15, "Description must be atleast 10 characters")
+      .max(150, "Description must not exceed 150 characters")
+      .required("Description is required"),
+
+    flashterms: Yup.array().of(
+      Yup.object({
+        term: Yup.string()
+          .min(3, "Term must be atleast 3 characters")
+          .required("Term name is required"),
+
+        defination: Yup.string()
+          .min(15, "Defination must be atleast 10 characters")
+          .max(150, "Defination must not exceed 150 characters")
+          .required("Defination is required"),
+      }),
+    ),
+  });
 
   const handleSubmit = async (values, { resetForm }) => {
     setLoading(true);
@@ -88,6 +113,7 @@ const CreateFlashcard = () => {
               },
             ],
           }}
+          validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
           {({ values, setFieldValue }) => {
@@ -194,10 +220,8 @@ const CreateFlashcard = () => {
                         as="textarea"
                         name="groupdescription"
                         id="groupdescription"
-                        placeholder="Describe the roles,responsibility,skills required for the job and help candidate understand the role better. (Max length 500)"
+                        placeholder="Describe the roles,responsibility,skills required for the job and help candidate understand the role better. (Max length 150)"
                         rows="5"
-                        maxLength={500}
-                        required
                         className="w-4/5 placeholder:text-gray-400 rounded-md border border-gray-400 px-4 py-3 focus:outline-none"
                       />
 

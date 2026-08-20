@@ -1,9 +1,6 @@
 // Test 1 → Component renders correctly
 // Test 2 → Flashcard terms displayed
 // Test 3 → Selecting term changes card
-// Test 4 → Next works
-// Test 5 → Previous works
-// Test 6 → Invalid group
 
 import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
