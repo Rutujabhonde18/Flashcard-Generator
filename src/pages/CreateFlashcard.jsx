@@ -31,6 +31,18 @@ const CreateFlashcard = () => {
       .max(150, "Description must not exceed 150 characters")
       .required("Description is required"),
 
+    groupImg: Yup.mixed()
+      .required("Image is required")
+      .test("fileSize", "Image size must be less than 100MB", (value) => {
+        if (!value) return true;
+        return value.size <= 100 * 1024 * 1024;
+      })
+      .test("fileType", "Only JPG, JPEG, PNG, WEBP format allowed", (value) => {
+        if (!value) return true;
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        return allowedTypes.includes(value.type);
+      }),
+
     flashterms: Yup.array().of(
       Yup.object({
         term: Yup.string()
@@ -42,6 +54,22 @@ const CreateFlashcard = () => {
           .min(15, "Defination must be atleast 10 characters")
           .max(150, "Defination must not exceed 150 characters")
           .required("Defination is required"),
+
+        image: Yup.mixed()
+          .required("Image is required")
+          .test("fileSize", "Image size must be less than 100MB", (value) => {
+            if (!value) return true;
+            return value.size <= 100 * 1024 * 1024;
+          })
+          .test(
+            "fileType",
+            "Only JPG, JPEG, PNG, WEBP format allowed",
+            (value) => {
+              if (!value) return true;
+              const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+              return allowedTypes.includes(value.type);
+            },
+          ),
       }),
     ),
   });
@@ -114,6 +142,8 @@ const CreateFlashcard = () => {
               {
                 term: "",
                 defination: "",
+                image: null,
+                imagePreview: null,
               },
             ],
           }}
@@ -148,7 +178,7 @@ const CreateFlashcard = () => {
                         <ErrorMessage
                           name="groupname"
                           component="div"
-                          className="text-red-500 text-xs"
+                          className="text-red-500 text-xs mt-1"
                         />
                       </div>
 
@@ -196,7 +226,7 @@ const CreateFlashcard = () => {
                           ref={groupFilePicker}
                           type="file"
                           name="groupImg"
-                          accept="image/*"
+                          accept=".jpg, .jpeg, .png, .webp"
                           className="hidden"
                           onChange={(event) => {
                             const file = event.target.files[0];
@@ -208,6 +238,11 @@ const CreateFlashcard = () => {
                               setFieldValue("groupImg", file);
                             }
                           }}
+                        />
+                        <ErrorMessage
+                          name="groupImg"
+                          component="div"
+                          className="text-red-500 text-xs"
                         />
                       </div>
                     </div>
@@ -225,6 +260,7 @@ const CreateFlashcard = () => {
                         as="textarea"
                         name="groupdescription"
                         id="groupdescription"
+                        required
                         placeholder="Describe the roles,responsibility,skills required for the job and help candidate understand the role better. (Max length 150)"
                         rows="5"
                         className="w-4/5 placeholder:text-gray-400 rounded-md border border-gray-400 px-4 py-3 focus:outline-none"

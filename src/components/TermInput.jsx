@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useRef } from "react";
 
 const TermInput = ({ index, remove, myterms, setFieldValue }) => {
-  const termInputRefs = useRef([]);
+  const termInputRef = useRef(null);
   return (
     <div
       key={index}
@@ -30,16 +30,15 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
           name={`flashterms.${index}.term`}
           type="text"
           placeholder="Enter Term"
-          innerRef={(el) => {
-            termInputRefs.current[index] = el;
-          }}
+          required
+          innerRef={termInputRef}
           className="placeholder-gray-300 w-full p-2 h-10 border border-gray-400 rounded-sm focus:outline-none"
         />
 
         <ErrorMessage
           name={`flashterms.${index}.term`}
           component="div"
-          className="text-red-500 text-xs"
+          className="text-red-500 text-xs mt-1"
         />
       </div>
 
@@ -84,7 +83,7 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
         <input
           id={`flashcard-image-${index}`}
           type="file"
-          accept="image/*"
+          accept=".jpg, .jpeg, .png, .webp"
           className="hidden"
           onChange={(event) => {
             const file = event.target.files[0];
@@ -129,6 +128,11 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
             </button>
           </div>
         )}
+        <ErrorMessage
+              name={`flashterms.${index}.image`}
+              component="div"
+              className="text-red-500 text-xs mt-1"
+            />
       </div>
       {/* DELETE + EDIT */}
       <div className="w-16 lg:mt-14 flex lg:flex-col md:flex-row lg:items-center mx-auto gap-2 text-purple-700">
@@ -144,7 +148,7 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
         <button
           type="button"
           onClick={() => {
-            termInputRefs.current[index]?.focus();
+            termInputRef.current?.focus();
           }}
         >
           <BiEdit className="w-5 h-5 text-blue-600 cursor-pointer" />
