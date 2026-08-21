@@ -5,7 +5,6 @@ import {
   MdDownload,
   MdPrint,
   MdClose,
-  MdContentCopy,
   MdCopyAll,
 } from "react-icons/md";
 
@@ -237,7 +236,7 @@ const ShareModel = ({ currentGroup, currentCard }) => {
               <span className="text-sm px-3">Link</span>
               <input
                 type="text"
-                value="http://localhost:5173/flashcarddetails/1786703670941"
+                value={shareUrl}
                 readOnly
                 className="flex-1 outline-none text-sm text-gray-600 py-3"
               />
