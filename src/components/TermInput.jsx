@@ -4,7 +4,13 @@ import { BiEdit } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { useRef } from "react";
 
-const TermInput = ({ index, remove, myterms, setFieldValue }) => {
+const TermInput = ({
+  index,
+  remove,
+  myterms,
+  setFieldValue,
+  setFieldTouched,
+}) => {
   const termInputRef = useRef(null);
   return (
     <div
@@ -30,9 +36,8 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
           name={`flashterms.${index}.term`}
           type="text"
           placeholder="Enter Term"
-          required
           innerRef={termInputRef}
-          className="placeholder-gray-300 w-full p-2 h-10 border border-gray-400 rounded-sm focus:outline-none"
+          className="placeholder-gray-300 w-full p-2 h-10 text-sm border border-gray-400 rounded-sm focus:outline-none"
         />
 
         <ErrorMessage
@@ -52,15 +57,14 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
           as="textarea"
           rows="2"
           placeholder="Enter Definition"
-          required
           name={`flashterms.${index}.defination`}
-          className=" placeholder:text-gray-400 w-full rounded-md border border-gray-400 px-4 py-3 focus:outline-none"
+          className=" placeholder:text-gray-400 w-full text-sm rounded-md border border-gray-400 px-4 py-3 focus:outline-none"
         />
 
         <ErrorMessage
           name={`flashterms.${index}.defination`}
           component="div"
-          className="text-red-500 text-xs"
+          className="text-red-500 text-xs mt-1"
         />
       </div>
 
@@ -82,6 +86,7 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
 
         <input
           id={`flashcard-image-${index}`}
+          name={`flashterms.${index}.image`}
           type="file"
           accept=".jpg, .jpeg, .png, .webp"
           className="hidden"
@@ -90,10 +95,13 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
 
             if (file) {
               const imageUrl = URL.createObjectURL(file);
+              setFieldTouched(`flashterms.${index}.image`, true);
 
               setFieldValue(`flashterms.${index}.image`, file);
-
               setFieldValue(`flashterms.${index}.imagePreview`, imageUrl);
+            } else {
+              setFieldValue(`flashterms.${index}.image`, null);
+              setFieldValue(`flashterms.${index}.imagePreview`, null);
             }
           }}
         />
@@ -129,10 +137,10 @@ const TermInput = ({ index, remove, myterms, setFieldValue }) => {
           </div>
         )}
         <ErrorMessage
-              name={`flashterms.${index}.image`}
-              component="div"
-              className="text-red-500 text-xs mt-1"
-            />
+          name={`flashterms.${index}.image`}
+          component="div"
+          className="text-red-500 text-xs mt-1"
+        />
       </div>
       {/* DELETE + EDIT */}
       <div className="w-16 lg:mt-14 flex lg:flex-col md:flex-row lg:items-center mx-auto gap-2 text-purple-700">

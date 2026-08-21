@@ -16,6 +16,8 @@ const CreateFlashcard = () => {
   const [loading, setLoading] = useState(false);
 
   const groupFilePicker = useRef(null);
+  const groupNameRef = useRef(null);
+  const groupDescriptionRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -23,12 +25,13 @@ const CreateFlashcard = () => {
     groupname: Yup.string()
       .trim()
       .min(3, "Group Name must be atleast 3 characters")
+      .max(25, "Max length 25 chars")
       .required("Group name is required"),
 
     groupdescription: Yup.string()
       .trim()
-      .min(15, "Description must be atleast 10 characters")
-      .max(150, "Description must not exceed 150 characters")
+      .min(10, "Description must be atleast 10 characters")
+      .max(500, "Description must not exceed 500 characters")
       .required("Description is required"),
 
     groupImg: Yup.mixed()
@@ -48,11 +51,12 @@ const CreateFlashcard = () => {
         term: Yup.string()
           .trim()
           .min(3, "Term must be atleast 3 characters")
+          .max(25, "Max length 25 chars")
           .required("Term name is required"),
 
         defination: Yup.string()
-          .min(15, "Defination must be atleast 10 characters")
-          .max(150, "Defination must not exceed 150 characters")
+          .min(10, "Defination must be atleast 10 characters")
+          .max(500, "Defination must not exceed 500 characters")
           .required("Defination is required"),
 
         image: Yup.mixed()
@@ -137,7 +141,6 @@ const CreateFlashcard = () => {
             groupname: "",
             groupImg: null,
             groupdescription: "",
-
             flashterms: [
               {
                 term: "",
@@ -148,9 +151,52 @@ const CreateFlashcard = () => {
             ],
           }}
           validationSchema={validationSchema}
+          validateOnBlur={true}
+          validateOnChange={true}
+          validateOnMount={true}
           onSubmit={handleSubmit}
         >
-          {({ values, setFieldValue }) => {
+          {({ values, errors, touched, setFieldValue, setFieldTouched }) => {
+            const focusFirstError = () => {
+              if (errors.groupname) {
+                groupNameRef.current?.focus();
+                return;
+              }
+
+              if (errors.groupImg) {
+                groupFilePicker.current?.click();
+                return;
+              }
+
+              if (errors.groupdescription) {
+                groupDescriptionRef.current?.focus();
+                return;
+              }
+
+              if (errors.flashterms) {
+                const firstTermError = errors.flashterms[0];
+
+                if (firstTermError?.term) {
+                  document
+                    .querySelector('input[name="flashterms.0.term"]')
+                    ?.focus();
+                  return;
+                }
+
+                if (firstTermError?.defination) {
+                  document
+                    .querySelector('textarea[name="flashterms.0.defination"]')
+                    ?.focus();
+                  return;
+                }
+
+                if (firstTermError?.image) {
+                  document
+                    .querySelector('input[name="flashterms.0.image"]')
+                    ?.click();
+                }
+              }
+            };
             const isFlashcardDisabled =
               !values.groupname.trim() || !values.groupdescription.trim();
 
@@ -168,11 +214,11 @@ const CreateFlashcard = () => {
                         </label>
 
                         <Field
+                          innerRef={groupNameRef}
                           className="placeholder-gray-400 p-2 h-10 w-full sm:w-60 border border-gray-400 text-sm rounded-sm focus:outline-none"
                           type="text"
                           placeholder="Enter Group Name"
                           name="groupname"
-                          required
                         />
 
                         <ErrorMessage
@@ -183,7 +229,7 @@ const CreateFlashcard = () => {
                       </div>
 
                       {/* Group Image */}
-                      <div className="flex items-end gap-8">
+                      <div className="flex items-end gap-4">
                         <div
                           onClick={() => groupFilePicker.current.click()}
                           required
@@ -230,19 +276,22 @@ const CreateFlashcard = () => {
                           className="hidden"
                           onChange={(event) => {
                             const file = event.target.files[0];
+                            setFieldTouched("groupImg", true);
 
                             if (file) {
                               const imageUrl = URL.createObjectURL(file);
 
                               setGroupImagePreview(imageUrl);
                               setFieldValue("groupImg", file);
+                            } else {
+                              setFieldValue("groupImg", null);
                             }
                           }}
                         />
                         <ErrorMessage
                           name="groupImg"
                           component="div"
-                          className="text-red-500 text-xs"
+                          className="text-red-500 text-xs mt-1"
                         />
                       </div>
                     </div>
@@ -257,13 +306,13 @@ const CreateFlashcard = () => {
                       </label>
 
                       <Field
+                        innerRef={groupDescriptionRef}
                         as="textarea"
                         name="groupdescription"
                         id="groupdescription"
-                        required
-                        placeholder="Describe the roles,responsibility,skills required for the job and help candidate understand the role better. (Max length 150)"
+                        placeholder="Describe the roles,responsibility,skills required for the job and help candidate understand the role better. (Max length 500)"
                         rows="5"
-                        className="w-4/5 placeholder:text-gray-400 rounded-md border border-gray-400 px-4 py-3 focus:outline-none"
+                        className="w-4/5 placeholder:text-gray-400 rounded-md border border-gray-400 px-4 py-3 text-sm focus:outline-none"
                       />
                       <div className="flex justify-between w-4/5">
                         <ErrorMessage
@@ -272,7 +321,7 @@ const CreateFlashcard = () => {
                           className="text-red-500 text-xs mt-1"
                         />
                         <p className="text-xs text-gray-500 mt-1 ">
-                          {values.groupdescription.length}/150 characters
+                          {values.groupdescription.length}/500 characters
                         </p>
                       </div>
                     </div>
@@ -297,6 +346,7 @@ const CreateFlashcard = () => {
                               remove={remove}
                               myterms={myterms}
                               setFieldValue={setFieldValue}
+                              setFieldTouched={setFieldTouched}
                             />
                           ))}
 
@@ -327,6 +377,11 @@ const CreateFlashcard = () => {
                   <div className="text-center">
                     <button
                       type="submit"
+                      onClick={() => {
+                        setTimeout(() => {
+                          focusFirstError();
+                        }, 100);
+                      }}
                       className="cursor-pointer px-14 py-2 rounded-sm bg-red-600 text-white active:scale-95 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 mb-10"
                     >
                       Create
