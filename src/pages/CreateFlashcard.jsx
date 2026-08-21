@@ -1,5 +1,6 @@
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import { MdUploadFile, MdAdd } from "react-icons/md";
+import { RxCross2 } from "react-icons/rx";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
@@ -8,7 +9,6 @@ import { filetoDataURL } from "../utils/localStorage";
 import Loading from "../components/Loading";
 import TermInput from "../components/TermInput";
 import * as Yup from "yup";
-import { RxCross2 } from "react-icons/rx";
 
 const CreateFlashcard = () => {
   const [groupImagePreview, setGroupImagePreview] = useState(null);
@@ -30,7 +30,7 @@ const CreateFlashcard = () => {
 
     groupdescription: Yup.string()
       .trim()
-      .min(10, "Description must be atleast 10 characters")
+      .min(30, "Description must be atleast 30 characters")
       .max(500, "Description must not exceed 500 characters")
       .required("Description is required"),
 
@@ -55,7 +55,7 @@ const CreateFlashcard = () => {
           .required("Term name is required"),
 
         defination: Yup.string()
-          .min(10, "Defination must be atleast 10 characters")
+          .min(30, "Defination must be atleast 30 characters")
           .max(500, "Defination must not exceed 500 characters")
           .required("Defination is required"),
 
