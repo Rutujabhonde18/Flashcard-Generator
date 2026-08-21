@@ -36,13 +36,32 @@ const ShareModel = ({ currentGroup, currentCard }) => {
   // copylink
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      // Modern browser
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        // Fallback
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
       setCopied(true);
+
       setTimeout(() => {
         setCopied(false);
       }, 2000);
     } catch (error) {
-      console.log("Unable to copy link", error);
+      console.error("Unable to copy link:", error);
     }
   };
 
