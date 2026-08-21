@@ -8,6 +8,7 @@ import { filetoDataURL } from "../utils/localStorage";
 import Loading from "../components/Loading";
 import TermInput from "../components/TermInput";
 import * as Yup from "yup";
+import { RxCross2 } from "react-icons/rx";
 
 const CreateFlashcard = () => {
   const [groupImagePreview, setGroupImagePreview] = useState(null);
@@ -20,10 +21,12 @@ const CreateFlashcard = () => {
 
   const validationSchema = Yup.object({
     groupname: Yup.string()
+      .trim()
       .min(3, "Group Name must be atleast 3 characters")
       .required("Group name is required"),
 
     groupdescription: Yup.string()
+      .trim()
       .min(15, "Description must be atleast 10 characters")
       .max(150, "Description must not exceed 150 characters")
       .required("Description is required"),
@@ -31,6 +34,7 @@ const CreateFlashcard = () => {
     flashterms: Yup.array().of(
       Yup.object({
         term: Yup.string()
+          .trim()
           .min(3, "Term must be atleast 3 characters")
           .required("Term name is required"),
 
@@ -152,6 +156,7 @@ const CreateFlashcard = () => {
                       <div className="flex items-end gap-8">
                         <div
                           onClick={() => groupFilePicker.current.click()}
+                          required
                           className="w-36 h-10 border border-gray-400 rounded-sm cursor-pointer active:scale-95"
                         >
                           <span className="text-sm text-blue-600 flex items-center justify-center h-full font-semibold ">
@@ -163,7 +168,7 @@ const CreateFlashcard = () => {
                         </div>
 
                         {groupImagePreview && (
-                          <div className="relative">
+                          <div className="relative inline-block">
                             <img
                               src={groupImagePreview}
                               alt="Group Preview"
@@ -180,9 +185,9 @@ const CreateFlashcard = () => {
                                   groupFilePicker.current.value = "";
                                 }
                               }}
-                              className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-sm font-bold "
+                              className="absolute -top-2 -right-2 z-50 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white cursor-pointer"
                             >
-                              ×
+                              <RxCross2 size={10} strokeWidth={1} />
                             </button>
                           </div>
                         )}
@@ -224,16 +229,16 @@ const CreateFlashcard = () => {
                         rows="5"
                         className="w-4/5 placeholder:text-gray-400 rounded-md border border-gray-400 px-4 py-3 focus:outline-none"
                       />
-
-                      <p className="text-xs text-gray-500 mt-1">
-                        {values.groupdescription.length}/150 characters
-                      </p>
-
-                      <ErrorMessage
-                        name="groupdescription"
-                        component="div"
-                        className="text-red-500 text-xs mt-1"
-                      />
+                      <div className="flex justify-between w-4/5">
+                        <ErrorMessage
+                          name="groupdescription"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                        <p className="text-xs text-gray-500 mt-1 ">
+                          {values.groupdescription.length}/150 characters
+                        </p>
+                      </div>
                     </div>
                   </div>
 

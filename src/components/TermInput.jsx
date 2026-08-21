@@ -1,8 +1,11 @@
 import { Field, ErrorMessage } from "formik";
 import { MdDeleteOutline } from "react-icons/md";
 import { BiEdit } from "react-icons/bi";
+import { RxCross2 } from "react-icons/rx";
+import { useRef } from "react";
 
-const TermInput = ({index, remove, myterms, setFieldValue}) => {
+const TermInput = ({ index, remove, myterms, setFieldValue }) => {
+  const termInputRefs = useRef([]);
   return (
     <div
       key={index}
@@ -27,7 +30,9 @@ const TermInput = ({index, remove, myterms, setFieldValue}) => {
           name={`flashterms.${index}.term`}
           type="text"
           placeholder="Enter Term"
-          required
+          innerRef={(el) => {
+            termInputRefs.current[index] = el;
+          }}
           className="placeholder-gray-300 w-full p-2 h-10 border border-gray-400 rounded-sm focus:outline-none"
         />
 
@@ -70,7 +75,7 @@ const TermInput = ({index, remove, myterms, setFieldValue}) => {
             }
             className="w-auto h-12 border border-gray-400 rounded-sm cursor-pointer active:scale-95"
           >
-            <span className="text-blue-600 flex items-center justify-center  font-semibold px-16">
+            <span className="text-blue-600 flex items-center justify-center font-semibold px-16">
               Select Image
             </span>
           </button>
@@ -96,7 +101,7 @@ const TermInput = ({index, remove, myterms, setFieldValue}) => {
 
         {/* IMAGE PREVIEW */}
         {myterms.imagePreview && (
-          <div className="relative">
+          <div className="relative inline-block">
             <img
               src={myterms.imagePreview}
               alt="Preview"
@@ -118,24 +123,32 @@ const TermInput = ({index, remove, myterms, setFieldValue}) => {
                   input.value = "";
                 }
               }}
-              className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-sm font-bold cursor-pointer"
+              className="absolute -top-2 -right-2 z-50 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white cursor-pointer"
             >
-              ×
+              <RxCross2 size={10} strokeWidth={1} />
             </button>
           </div>
         )}
       </div>
       {/* DELETE + EDIT */}
       <div className="w-16 lg:mt-14 flex lg:flex-col md:flex-row lg:items-center mx-auto gap-2 text-purple-700">
+        {index != 0 && (
+          <button
+            type="button"
+            onClick={() => remove(index)}
+            className="cursor-pointer "
+          >
+            <MdDeleteOutline className="w-5 h-5 text-red-600" />
+          </button>
+        )}
         <button
           type="button"
-          onClick={() => remove(index)}
-          className="cursor-pointer "
+          onClick={() => {
+            termInputRefs.current[index]?.focus();
+          }}
         >
-          <MdDeleteOutline className="w-5 h-5 text-red-600" />
+          <BiEdit className="w-5 h-5 text-blue-600 cursor-pointer" />
         </button>
-
-        <BiEdit className="w-5 h-5 text-blue-600 cursor-pointer" />
       </div>
     </div>
   );

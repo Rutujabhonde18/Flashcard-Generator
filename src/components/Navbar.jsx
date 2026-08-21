@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -8,20 +8,32 @@ const Navbar = () => {
 
         <ul className="flex gap-14 mx-1 text-gray-500">
           <li>
-            <Link
+            <NavLink
               to="/"
-              className="py-2.5 text-lg font-semibold hover:text-red-600 focus:text-red-600 focus:border-b-2 focus:border-red-600"
+              className={({ isActive }) =>
+                `py-2.5 text-lg font-semibold ${
+                  isActive
+                    ? "text-red-600 border-b-2 border-red-600"
+                    : "hover:text-red-600"
+                }`
+              }
             >
               Create New
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link
+            <NavLink
               to="/myflashcard"
-              className="py-2.5 text-lg font-semibold hover:text-red-600 focus:text-red-600  focus:border-b-2 focus:border-red-600"
+              className={({ isActive }) =>
+                `py-2.5 text-lg font-semibold ${
+                  isActive
+                    ? "text-red-600 border-b-2 border-red-600"
+                    : "hover:text-red-600"
+                }`
+              }
             >
               My Flashcard
-            </Link>
+            </NavLink>
           </li>
         </ul>
 
