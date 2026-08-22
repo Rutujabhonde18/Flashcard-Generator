@@ -35,7 +35,7 @@ const CreateFlashcard = () => {
       .required("Description is required"),
 
     groupImg: Yup.mixed()
-    .nullable()
+      .nullable()
       .test("fileSize", "Image size must be less than 100MB", (value) => {
         if (!value) return true;
         return value.size <= 100 * 1024 * 1024;
@@ -60,7 +60,7 @@ const CreateFlashcard = () => {
           .required("Defination is required"),
 
         image: Yup.mixed()
-        .nullable()
+          .nullable()
           .test("fileSize", "Image size must be less than 100MB", (value) => {
             if (!value) return true;
             return value.size <= 100 * 1024 * 1024;
@@ -220,71 +220,68 @@ const CreateFlashcard = () => {
                       </div>
 
                       {/* Group Image */}
-                      <div className="flex items-end gap-4">
-                        <div
-                          onClick={() => groupFilePicker.current.click()}
-                          className="w-36 h-10 border border-gray-400 rounded-sm cursor-pointer active:scale-95"
-                        >
-                          <span className="text-sm text-blue-600 flex items-center justify-center h-full font-semibold ">
-                            <MdUploadFile className="w-5 h-5 mr-2" />
-                            {groupImagePreview
-                              ? "Change Image"
-                              : "Upload Image"}
-                          </span>
-                        </div>
-
-                        {groupImagePreview && (
-                          <div className="relative inline-block">
-                            <img
-                              src={groupImagePreview}
-                              alt="Group Preview"
-                              className="h-16 w-32 rounded-md object-cover"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setGroupImagePreview(null);
-                                setFieldValue("groupImg", null);
-
-                                if (groupFilePicker.current) {
-                                  groupFilePicker.current.value = "";
-                                }
-                              }}
-                              className="absolute -top-2 -right-2 z-50 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white cursor-pointer"
-                            >
-                              <RxCross2 size={10} strokeWidth={1} />
-                            </button>
+                      <div className="flex flex-col">
+                        <div className="flex items-end gap-4">
+                          <div
+                            onClick={() => groupFilePicker.current.click()}
+                            className="w-36 h-10 border border-gray-400 rounded-sm cursor-pointer active:scale-95"
+                          >
+                            <span className="text-sm text-blue-600 flex items-center justify-center h-full font-semibold ">
+                              <MdUploadFile className="w-5 h-5 mr-2" />
+                              {groupImagePreview
+                                ? "Change Image"
+                                : "Upload Image"}
+                            </span>
                           </div>
-                        )}
 
-                        <input
-                          ref={groupFilePicker}
-                          type="file"
-                          name="groupImg"
-                          accept=".jpg, .jpeg, .png, .webp"
-                          className="hidden"
-                          onChange={(event) => {
-                            const file = event.target.files[0];
-                            setFieldTouched(`flashterms.${index}.image`, true);
+                          {groupImagePreview && (
+                            <div className="relative inline-block">
+                              <img
+                                src={groupImagePreview}
+                                alt="Group Preview"
+                                className="h-16 w-32 rounded-md object-cover"
+                              />
 
-                            if (file) {
-                              const imageUrl = URL.createObjectURL(file);
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setGroupImagePreview(null);
+                                  setFieldValue("groupImg", null);
 
-                              setFieldValue(`flashterms.${index}.image`, file);
-                              setFieldValue(
-                                `flashterms.${index}.imagePreview`,
-                                imageUrl,
-                              );
-                            } else {
-                              setFieldValue(`flashterms.${index}.image`, null);
-                              setFieldValue(
-                                `flashterms.${index}.imagePreview`,
-                                null,
-                              );
-                            }
-                          }}
-                        />
+                                  if (groupFilePicker.current) {
+                                    groupFilePicker.current.value = "";
+                                  }
+                                }}
+                                className="absolute -top-2 -right-2 z-50 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white cursor-pointer"
+                              >
+                                <RxCross2 size={10} strokeWidth={1} />
+                              </button>
+                            </div>
+                          )}
+
+                          <input
+                            ref={groupFilePicker}
+                            type="file"
+                            name="groupImg"
+                            accept=".jpg,.jpeg,.png,.webp"
+                            className="hidden"
+                            onChange={(event) => {
+                              const file = event.target.files[0];
+
+                              if (file) {
+                                const imageUrl = URL.createObjectURL(file);
+
+                                setFieldTouched("groupImg", true);
+
+                                setFieldValue("groupImg", file);
+                                setGroupImagePreview(imageUrl);
+                              } else {
+                                setFieldValue("groupImg", null);
+                                setGroupImagePreview(null);
+                              }
+                            }}
+                          />
+                        </div>
                         <ErrorMessage
                           name="groupImg"
                           component="div"
