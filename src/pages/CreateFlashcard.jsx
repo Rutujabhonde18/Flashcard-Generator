@@ -35,7 +35,7 @@ const CreateFlashcard = () => {
       .required("Description is required"),
 
     groupImg: Yup.mixed()
-      .required("Image is required")
+    .nullable()
       .test("fileSize", "Image size must be less than 100MB", (value) => {
         if (!value) return true;
         return value.size <= 100 * 1024 * 1024;
@@ -60,7 +60,7 @@ const CreateFlashcard = () => {
           .required("Defination is required"),
 
         image: Yup.mixed()
-          .required("Image is required")
+        .nullable()
           .test("fileSize", "Image size must be less than 100MB", (value) => {
             if (!value) return true;
             return value.size <= 100 * 1024 * 1024;
@@ -82,14 +82,16 @@ const CreateFlashcard = () => {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 200));
-      const groupImage = await filetoDataURL(values.groupImg);
+      const groupImage = values.groupImg
+        ? await filetoDataURL(values.groupImg)
+        : null;
 
       const terms = await Promise.all(
         values.flashterms.map(async (item) => ({
           id: Date.now() + Math.random(),
           term: item.term,
           definition: item.defination,
-          image: await filetoDataURL(item.image),
+          image: item.image ? await filetoDataURL(item.image) : null,
         })),
       );
 
@@ -163,11 +165,6 @@ const CreateFlashcard = () => {
                 return;
               }
 
-              if (errors.groupImg) {
-                groupFilePicker.current?.click();
-                return;
-              }
-
               if (errors.groupdescription) {
                 groupDescriptionRef.current?.focus();
                 return;
@@ -188,12 +185,6 @@ const CreateFlashcard = () => {
                     .querySelector('textarea[name="flashterms.0.defination"]')
                     ?.focus();
                   return;
-                }
-
-                if (firstTermError?.image) {
-                  document
-                    .querySelector('input[name="flashterms.0.image"]')
-                    ?.click();
                 }
               }
             };
@@ -232,7 +223,6 @@ const CreateFlashcard = () => {
                       <div className="flex items-end gap-4">
                         <div
                           onClick={() => groupFilePicker.current.click()}
-                          required
                           className="w-36 h-10 border border-gray-400 rounded-sm cursor-pointer active:scale-95"
                         >
                           <span className="text-sm text-blue-600 flex items-center justify-center h-full font-semibold ">
@@ -276,15 +266,22 @@ const CreateFlashcard = () => {
                           className="hidden"
                           onChange={(event) => {
                             const file = event.target.files[0];
-                            setFieldTouched("groupImg", true);
+                            setFieldTouched(`flashterms.${index}.image`, true);
 
                             if (file) {
                               const imageUrl = URL.createObjectURL(file);
 
-                              setGroupImagePreview(imageUrl);
-                              setFieldValue("groupImg", file);
+                              setFieldValue(`flashterms.${index}.image`, file);
+                              setFieldValue(
+                                `flashterms.${index}.imagePreview`,
+                                imageUrl,
+                              );
                             } else {
-                              setFieldValue("groupImg", null);
+                              setFieldValue(`flashterms.${index}.image`, null);
+                              setFieldValue(
+                                `flashterms.${index}.imagePreview`,
+                                null,
+                              );
                             }
                           }}
                         />

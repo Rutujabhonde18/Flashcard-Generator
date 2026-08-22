@@ -197,10 +197,7 @@ const ShareModel = ({ currentGroup, currentCard }) => {
       <h1>${currentGroup.title}</h1>
       <p>${currentGroup.description}</p>
       <h2>${currentCard.term}</h2>
-      <div class="content">
-      <img src="${currentCard.image}"/>
-      <p class="definition">${currentCard.definition}</p>
-      </div>
+      <div class="content ${!currentCard.image ? "no-image" : ""}"> ${currentCard.image ? `<img src="${currentCard.image}" alt="${currentCard.term}" />` : ""} <p class="definition">${currentCard.definition}</p> </div>
       </body>
       </html>
       `);
