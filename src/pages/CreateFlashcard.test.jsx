@@ -28,14 +28,32 @@ vi.mock("../components/Loading", () => ({
   default: () => <div>Loading...</div>,
 }));
 
-vi.mock("../components/TermInput", () => ({
-  default: ({ index }) => (
-    <div>
-      <label htmlFor={`term-${index}`}>Enter Term</label>
-      <input id={`term-${index}`} />
-    </div>
-  ),
-}));
+vi.mock("../components/TermInput", async () => {
+  const { Field } = await import("formik");
+
+  return {
+    default: ({ index }) => (
+      <div>
+        <label htmlFor={`term-${index}`}>Enter Term</label>
+
+        <Field
+          id={`term-${index}`}
+          name={`flashterms.${index}.term`}
+        />
+
+        <label htmlFor={`definition-${index}`}>
+          Enter Definition
+        </label>
+
+        <Field
+          as="textarea"
+          id={`definition-${index}`}
+          name={`flashterms.${index}.defination`}
+        />
+      </div>
+    ),
+  };
+});
 
 vi.mock("react-toastify", () => ({
   ToastContainer: () => <div />,
@@ -58,57 +76,100 @@ describe("CreateFlashcard", () => {
     render(<CreateFlashcard />);
 
     expect(screen.getByText("Create Group")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter Group Name")).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText("Enter Group Name"),
+    ).toBeInTheDocument();
 
     expect(screen.getByText("Add Description")).toBeInTheDocument();
+
     expect(
       screen.getByPlaceholderText(/Describe the roles/),
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Create" }),
+    ).toBeInTheDocument();
   });
 
   test("should allow user to enter group name", async () => {
     const user = userEvent.setup();
+
     render(<CreateFlashcard />);
-    const groupNameInput = screen.getByPlaceholderText("Enter Group Name");
+
+    const groupNameInput =
+      screen.getByPlaceholderText("Enter Group Name");
+
     await user.type(groupNameInput, "Javascript");
+
     expect(groupNameInput).toHaveValue("Javascript");
   });
 
   test("should allow user to enter group description", async () => {
     const user = userEvent.setup();
+
     render(<CreateFlashcard />);
-    const descriptionInput = screen.getByPlaceholderText(/Describe the roles/);
-    await user.type(descriptionInput, "JavaScript interview flashcards");
-    expect(descriptionInput).toHaveValue("JavaScript interview flashcards");
+
+    const descriptionInput =
+      screen.getByPlaceholderText(/Describe the roles/);
+
+    await user.type(
+      descriptionInput,
+      "JavaScript interview flashcards",
+    );
+
+    expect(descriptionInput).toHaveValue(
+      "JavaScript interview flashcards",
+    );
   });
 
   test("should add another term when Add more is clicked", async () => {
     const user = userEvent.setup();
+
     render(<CreateFlashcard />);
-    expect(screen.getAllByLabelText("Enter Term")).toHaveLength(1);
-    await user.click(screen.getByRole("button", { name: /Add More/i }));
-    expect(screen.getAllByLabelText("Enter Term")).toHaveLength(2);
+
+    expect(
+      screen.getAllByLabelText("Enter Term"),
+    ).toHaveLength(1);
+
+    await user.click(
+      screen.getByRole("button", { name: /Add More/i }),
+    );
+
+    expect(
+      screen.getAllByLabelText("Enter Term"),
+    ).toHaveLength(2);
   });
 
   test("Create button submits the form", async () => {
+    const user = userEvent.setup();
+
     render(<CreateFlashcard />);
 
-    const groupNameInput = screen.getByPlaceholderText("Enter Group Name");
-    const descriptionInput = screen.getByPlaceholderText(/Describe the roles/);
+    const groupNameInput =
+      screen.getByPlaceholderText("Enter Group Name");
 
-    await userEvent.type(groupNameInput, "Javascript");
-    await userEvent.type(descriptionInput, "JavaScript interview flashcards");
+    const descriptionInput =
+      screen.getByPlaceholderText(/Describe the roles/);
 
-    const createButton = screen.getByRole("button", { name: "Create" });
+    await user.type(groupNameInput, "Javascript");
 
-    await userEvent.click(createButton);
+    await user.type(
+      descriptionInput,
+      "JavaScript interview flashcards",
+    );
+
+    const createButton =
+      screen.getByRole("button", { name: "Create" });
+
+    await user.click(createButton);
+
     expect(createButton).toBeInTheDocument();
   });
 
   test("success toast appears after creating flashcard", async () => {
     const user = userEvent.setup();
+
     render(<CreateFlashcard />);
 
     await user.type(
@@ -118,7 +179,17 @@ describe("CreateFlashcard", () => {
 
     await user.type(
       screen.getByPlaceholderText(/Describe the roles/i),
-      "JavaScript flashcards",
+      "JavaScript interview flashcards for beginners",
+    );
+
+    await user.type(
+      screen.getByLabelText("Enter Term"),
+      "JavaScript",
+    );
+
+    await user.type(
+      screen.getByLabelText("Enter Definition"),
+      "JavaScript is a programming language used to build web applications.",
     );
 
     await user.click(
@@ -140,6 +211,7 @@ describe("CreateFlashcard", () => {
 
   test("Loading appears while submitting", async () => {
     const user = userEvent.setup();
+
     render(<CreateFlashcard />);
 
     await user.type(
@@ -149,7 +221,17 @@ describe("CreateFlashcard", () => {
 
     await user.type(
       screen.getByPlaceholderText(/Describe the roles/i),
-      "JavaScript flashcards",
+      "JavaScript interview flashcards for beginners",
+    );
+
+    await user.type(
+      screen.getByLabelText("Enter Term"),
+      "JavaScript",
+    );
+
+    await user.type(
+      screen.getByLabelText("Enter Definition"),
+      "JavaScript is a programming language used to build web applications.",
     );
 
     await user.click(
@@ -158,6 +240,9 @@ describe("CreateFlashcard", () => {
       }),
     );
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Loading..."),
+    ).toBeInTheDocument();
   });
 });
+

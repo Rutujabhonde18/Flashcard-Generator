@@ -79,18 +79,19 @@ const FlashcardDetails = ({ group }) => {
 
         {/* Middle side buttons */}
         <div className="h-full lg:w-2/4">
-          <div className="h-80 w-full bg-white shadow-lg rounded-lg border-2 border-gray-200 lg:flex lg:flex-row lg:p-7 p-3 lg:py-10 gap-6">
+          <div className="h-80 w-full bg-white shadow-lg rounded-lg border-2 border-gray-200 p-3 lg:flex lg:flex-row lg:p-7 lg:py-10 gap-6">
             {currentCard?.image ? (
               <img
+                className="h-32 w-full sm:h-44 sm:w-full md:h-48 md:w-full lg:h-52 lg:w-3/6 object-cover rounded-lg"
                 src={currentCard.image}
                 alt={currentCard.term || "Flashcard"}
-                className="lg:h-52 md:h-32 lg:w-1/2 w-3/5 lg:pt-2 pt-1 object-cover rounded-lg"
               />
             ) : (
-              <div className="h-52 w-1/2 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="h-32 w-full sm:h-44 sm:w-full md:h-48 md:w-full lg:h-52 lg:min-w-1/2 bg-gray-100 rounded-lg flex items-center justify-center">
                 <p className="text-gray-400">No image</p>
               </div>
             )}
+
             <p className="text-justify text-gray-600 pt-3 lg:p-0 p-2 overflow-hidden lg:line-clamp-10 line-clamp-6">
               {currentCard?.definition || "No definition available."}
             </p>
